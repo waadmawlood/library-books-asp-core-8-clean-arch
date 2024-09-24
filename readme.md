@@ -65,3 +65,12 @@ The application is structured following clean architecture principles, which inc
    ```
 
 
+## Docker
+
+install postgres and redis in docker
+   ```sh
+   docker compose --env-file API/.env up -d
+   ```
+
+
+
