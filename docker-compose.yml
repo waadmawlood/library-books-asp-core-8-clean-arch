@@ -1,0 +1,58 @@
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: library-redis
+    restart: always
+    env_file:
+      - ./API/.env
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    networks:
+      - library-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: library-redis-commander
+    restart: always
+    env_file:
+      - ./API/.env
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=root
+      - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD:-123456}
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    depends_on:
+      - redis
+    networks:
+      - library-network
+  
+  db:
+    image: postgres:16.2
+    container_name: library-postgres
+    restart: always
+    env_file:
+      - ./API/.env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-libraryDB}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/data
+    networks:
+      - library-network
+
+volumes:
+  redis-data:
+  postgres-data:
+
+networks:
+  library-network:
+    name: library-network
+    driver: bridge
