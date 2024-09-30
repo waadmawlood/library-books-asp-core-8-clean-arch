@@ -1,96 +1,65 @@
 using Core.Entities;
-using Infrastructure.Data;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class CategoryController : BaseApiController
+public class CategoryController(ICategoryRepository repository) : BaseApiController
 {
-    private readonly StoreContext _context;
-
-    public CategoryController(StoreContext context)
-    {
-        _context = context;
-    }
-
-    // Create
+    /// <summary>
+    /// Create a new category
+    /// </summary>
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory(Category category)
     {
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        if (!await repository.AddAsync(category)) return BadRequest("Failed to create category");
+
         return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
     }
 
-    // Read
+    /// <summary>
+    /// Get all categories
+    /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories()
     {
-        return await _context.Categories.ToListAsync();
+        return Ok(await repository.GetAsync());
     }
 
+    /// <summary>
+    /// Get a category by id
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<ActionResult<Category>> GetCategory(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await repository.GetByIdAsync(id);
 
-        if (category == null)
-        {
-            return NotFound();
-        }
+        if (category == null) return NotFound();
 
         return category;
     }
 
-    // Update
+    /// <summary>
+    /// Update a category
+    /// </summary>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCategory(Guid id, Category category)
     {
-        if (id != category.Id)
-        {
-            return BadRequest();
-        }
+        if (id != category.Id) return BadRequest();
 
-        _context.Entry(category).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!CategoryExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
+        if (!await repository.UpdateAsync(category)) return BadRequest("Failed to update category");
 
         return NoContent();
     }
 
-    // Delete
+    /// <summary>
+    /// Delete a category
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
+        if (!await repository.DeleteAsync(id)) return BadRequest("Failed to delete category");
 
         return NoContent();
-    }
-
-    private bool CategoryExists(Guid id)
-    {
-        return _context.Categories.Any(e => e.Id == id);
     }
 }

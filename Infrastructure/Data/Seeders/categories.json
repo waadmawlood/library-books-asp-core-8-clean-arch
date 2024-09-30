@@ -1,0 +1,62 @@
+[
+    {
+        "Name": "Fiction",
+        "Description": "Fictional books"
+    },
+    {
+        "Name": "Non-Fiction",
+        "Description": "Non-fictional books"
+    },
+    {
+        "Name": "Science Fiction",
+        "Description": "Sci-fi books"
+    },
+    {
+        "Name": "Fantasy",
+        "Description": "Fantasy books"
+    },
+    {
+        "Name": "Mystery",
+        "Description": "Mystery and thriller books"
+    },
+    {
+        "Name": "Biography",
+        "Description": "Biographies and memoirs"
+    },
+    {
+        "Name": "Self-Help",
+        "Description": "Self-help and personal development books"
+    },
+    {
+        "Name": "History",
+        "Description": "Historical books"
+    },
+    {
+        "Name": "Health & Wellness",
+        "Description": "Health and wellness books"
+    },
+    {
+        "Name": "Children's Books",
+        "Description": "Books for children"
+    },
+    {
+        "Name": "Poetry",
+        "Description": "Poetry books"
+    },
+    {
+        "Name": "Comics & Graphic Novels",
+        "Description": "Comics and graphic novels"
+    },
+    {
+        "Name": "Cookbooks",
+        "Description": "Cookbooks and food literature"
+    },
+    {
+        "Name": "Travel",
+        "Description": "Travel books and guides"
+    },
+    {
+        "Name": "Art & Photography",
+        "Description": "Books on art and photography"
+    }
+]
