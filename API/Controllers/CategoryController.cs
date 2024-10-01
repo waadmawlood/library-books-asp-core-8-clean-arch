@@ -21,9 +21,9 @@ public class CategoryController(ICategoryRepository repository) : BaseApiControl
     /// Get all categories
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories()
+    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories(string? sort)
     {
-        return Ok(await repository.GetAsync());
+        return Ok(await repository.GetAsync(sort));
     }
 
     /// <summary>

@@ -4,7 +4,7 @@ namespace Core.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task<IReadOnlyList<Category>> GetAsync();
+    Task<IReadOnlyList<Category>> GetAsync(string? sort);
     Task<Category?> GetByIdAsync(Guid id);
     Task<bool> AddAsync(Category category);
     Task<bool> UpdateAsync(Category category);

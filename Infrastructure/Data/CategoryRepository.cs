@@ -6,9 +6,23 @@ namespace Infrastructure.Data;
 
 public class CategoryRepository(StoreContext context) : ICategoryRepository
 {
-    public async Task<IReadOnlyList<Category>> GetAsync()
+    public async Task<IReadOnlyList<Category>> GetAsync(string? sort)
     {
-        return await context.Categories.ToListAsync();
+        var query = context.Categories.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            query = sort switch
+            {
+                "name" => query.OrderBy(c => c.Name),
+                "nameDesc" => query.OrderByDescending(c => c.Name),
+                "createdAt" => query.OrderBy(c => c.CreatedAt),
+                "createdAtDesc" => query.OrderByDescending(c => c.CreatedAt),
+                _ => query
+            };
+        }
+
+        return await query.ToListAsync();
     }
 
     public async Task<Category?> GetByIdAsync(Guid id)
