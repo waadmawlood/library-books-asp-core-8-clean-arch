@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class CategoryController(ICategoryRepository repository) : BaseApiController
+public class CategoryController(IGenericRepository<Category> repository) : BaseApiController
 {
     /// <summary>
     /// Create a new category
@@ -12,7 +12,8 @@ public class CategoryController(ICategoryRepository repository) : BaseApiControl
     [HttpPost]
     public async Task<ActionResult<Category>> CreateCategory(Category category)
     {
-        if (!await repository.AddAsync(category)) return BadRequest("Failed to create category");
+        repository.Add(category);
+        if (!await repository.SaveAllAsync()) return BadRequest("Failed to create category");
 
         return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
     }
@@ -23,7 +24,7 @@ public class CategoryController(ICategoryRepository repository) : BaseApiControl
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories(string? sort)
     {
-        return Ok(await repository.GetAsync(sort));
+        return Ok(await repository.ListAllAsync());
     }
 
     /// <summary>
@@ -45,9 +46,11 @@ public class CategoryController(ICategoryRepository repository) : BaseApiControl
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCategory(Guid id, Category category)
     {
-        if (id != category.Id) return BadRequest();
+        if (id != category.Id || !repository.Exists(category.Id)) return BadRequest();
 
-        if (!await repository.UpdateAsync(category)) return BadRequest("Failed to update category");
+        repository.Update(category);
+
+        if (!await repository.SaveAllAsync()) return BadRequest("Failed to update category");
 
         return NoContent();
     }
@@ -58,7 +61,12 @@ public class CategoryController(ICategoryRepository repository) : BaseApiControl
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
-        if (!await repository.DeleteAsync(id)) return BadRequest("Failed to delete category");
+        var category = await repository.GetByIdAsync(id);
+        if (category is null) return NotFound();
+        
+        repository.Remove(category);
+
+        if (!await repository.SaveAllAsync()) return BadRequest("Failed to delete category");
 
         return NoContent();
     }

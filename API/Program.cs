@@ -11,8 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
 
 // Add services to the container.
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
 builder.Services.AddControllers();
 builder.Services.AddDbContext<StoreContext>(options => 
 {
@@ -23,6 +21,10 @@ builder.Services.AddDbContext<StoreContext>(options =>
     }
     options.UseNpgsql(connectionString, builder => builder.MigrationsAssembly("Infrastructure"));
 });
+
+// Scoped services
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
